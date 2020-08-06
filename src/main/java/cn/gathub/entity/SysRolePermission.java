@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 /**
  * 角色权限表
+ * @author hyh
  */
 @Data
 @EqualsAndHashCode(callSuper = false)

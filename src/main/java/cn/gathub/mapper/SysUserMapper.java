@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * 用户表 Mapper 接口
+ * @author hyh
  */
 public interface SysUserMapper extends BaseMapper<SysUser> {
     /**
@@ -14,6 +15,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param username
      * @return
      */
-    public SysUser getUserByName(@Param("username") String username);
+    SysUser getUserByName(@Param("username") String username);
 
 }

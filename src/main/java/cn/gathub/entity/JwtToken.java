@@ -2,6 +2,10 @@ package cn.gathub.entity;
 
 import org.apache.shiro.authc.AuthenticationToken;
 
+/**
+ * token pojo
+ * @author hyh
+ */
 public class JwtToken implements AuthenticationToken {
 
     private static final long serialVersionUID = 1L;

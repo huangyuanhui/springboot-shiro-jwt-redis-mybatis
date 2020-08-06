@@ -6,9 +6,9 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     druid:
-      url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+      url: jdbc:mysql://127.0.0.1:3306/shiro?characterEncoding=UTF-8&serverTimezone=GMT
       username: root
-      password: 666666
+      password: 1234
       initial-size: 10
       max-active: 100
       min-idle: 10

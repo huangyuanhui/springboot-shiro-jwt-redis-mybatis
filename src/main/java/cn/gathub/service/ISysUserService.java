@@ -6,9 +6,19 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Set;
 
+/**
+ * 用户接口
+ * @author hyh
+ */
 public interface ISysUserService extends IService<SysUser> {
 
-    public SysUser getUserByName(String username);
+    /**
+     * 通过用户名获取用户
+     *
+     * @param username
+     * @return
+     */
+    SysUser getUserByName(String username);
 
     /**
      * 通过用户名获取用户角色集合

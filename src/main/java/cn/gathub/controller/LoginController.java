@@ -12,32 +12,44 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * 登录控制器
+ * @author hyh
+ */
 @RestController
 @RequestMapping("/sys")
 @Slf4j
 public class LoginController {
     @Autowired
     private ISysUserService sysUserService;
+
     @Autowired
     private RedisUtil redisUtil;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    /**
+     * 登录方法不走shiro自定义Realm的认证方法 而是自己实现的认证逻辑
+     * @param loginUser
+     * @return
+     * @throws Exception
+     */
+    @PostMapping(value = "/login")
     public Result<JSONObject> login(@RequestBody SysUser loginUser) throws Exception {
-        Result<JSONObject> result = new Result<JSONObject>();
+
         String username = loginUser.getUserName();
         String password = loginUser.getPassWord();
+        //根据用户名查询用户
+        SysUser sysUser = sysUserService.getUserByName(username);
 
         //1. 校验用户是否有效
-        SysUser sysUser = sysUserService.getUserByName(username);
-        result = sysUserService.checkUserIsEffective(sysUser);
+        Result<JSONObject> result = sysUserService.checkUserIsEffective(sysUser);
         if (!result.isSuccess()) {
             return result;
         }
 
         //2. 校验用户名或密码是否正确
-        String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
-        String syspassword = sysUser.getPassWord();
-        if (!syspassword.equals(userpassword)) {
+        String userPassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
+        String sysPassword = sysUser.getPassWord();
+        if (!sysPassword.equals(userPassword)) {
             result.error500("用户名或密码错误");
             return result;
         }
@@ -55,7 +67,7 @@ public class LoginController {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/logout")
+    @GetMapping(value = "/logout")
     public Result<Object> logout(HttpServletRequest request, HttpServletResponse response) {
         //用户退出逻辑
         String token = request.getHeader(CommonConstant.ACCESS_TOKEN);
@@ -90,10 +102,8 @@ public class LoginController {
         String username = sysUser.getUserName();
         // 生成token
         String token = JwtUtil.sign(username, syspassword);
-        redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-        // 设置超时时间
-        redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
-
+        // token存入redis 并设置超时时间
+        redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token, JwtUtil.EXPIRE_TIME / 1000);
         // 获取用户部门信息
         JSONObject obj = new JSONObject();
         obj.put("token", token);

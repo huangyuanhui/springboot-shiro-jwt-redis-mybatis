@@ -20,9 +20,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * @description: shiro 配置类
+ * shiro配置
+ *
+ * @author hyh
  */
-
 @Configuration
 public class ShiroConfig {
 
@@ -56,8 +57,9 @@ public class ShiroConfig {
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
         filterMap.put("jwt", new JwtFilter());
+        // 将自己的过滤器添加给shiro过滤器链
         shiroFilterFactoryBean.setFilters(filterMap);
-        // <!-- 过滤链定义，从上向下顺序执行，一般将/**放在最为下边
+        // 过滤链定义，从上向下顺序执行，一般将/**放在最为下边：/**先被自定义过滤器拦截过滤
         filterChainDefinitionMap.put("/**", "jwt");
 
         // 未授权界面返回JSON
@@ -67,16 +69,19 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
+    /**
+     * 安全管理器
+     *
+     * @param myRealm
+     * @return
+     */
     @Bean("securityManager")
     public DefaultWebSecurityManager securityManager(ShiroRealm myRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        //使用自定义 realm
         securityManager.setRealm(myRealm);
 
-        /*
-         * 关闭shiro自带的session，详情见文档
-         * http://shiro.apache.org/session-management.html#SessionManagement-
-         * StatelessApplications%28Sessionless%29
-         */
+        //关闭shiro自带的session
         DefaultSubjectDAO subjectDAO = new DefaultSubjectDAO();
         DefaultSessionStorageEvaluator defaultSessionStorageEvaluator = new DefaultSessionStorageEvaluator();
         defaultSessionStorageEvaluator.setSessionStorageEnabled(false);

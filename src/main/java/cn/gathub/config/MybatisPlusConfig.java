@@ -6,6 +6,10 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * mybatis-plus配置
+ * @author hyh
+ */
 @Configuration
 @MapperScan(value = {"cn.gathub.mapper"})
 public class MybatisPlusConfig {

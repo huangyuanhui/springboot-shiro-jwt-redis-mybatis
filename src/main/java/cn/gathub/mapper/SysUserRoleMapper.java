@@ -9,9 +9,15 @@ import java.util.List;
 
 /**
  * 用户角色表 Mapper 接口
+ * @author hyh
  */
 public interface SysUserRoleMapper extends BaseMapper<SysUserRole> {
 
+    /**
+     * 通过用户名获取角色
+     * @param username
+     * @return
+     */
     @Select("select id from sys_role where id in (select role_id from sys_user_role where user_id = (select id from sys_user where user_name=#{username}))")
     List<String> getRoleByUserName(@Param("username") String username);
 }

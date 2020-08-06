@@ -26,6 +26,7 @@ import java.util.Set;
 
 /**
  * 用户登录鉴权和获取用户授权
+ * @author hyh
  */
 @Component
 @Slf4j
@@ -34,6 +35,7 @@ public class ShiroRealm extends AuthorizingRealm {
     @Autowired
     @Lazy
     private ISysUserService sysUserService;
+
     @Autowired
     @Lazy
     private RedisUtil redisUtil;

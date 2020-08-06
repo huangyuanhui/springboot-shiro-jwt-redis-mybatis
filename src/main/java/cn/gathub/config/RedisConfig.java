@@ -22,8 +22,12 @@ import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Arrays;
 
-import static java.util.Collections.singletonMap;
 
+/**
+ * redis配置
+ *
+ * @author hyh
+ */
 @Configuration
 @EnableCaching // 开启缓存支持
 public class RedisConfig extends CachingConfigurerSupport {
@@ -75,24 +79,32 @@ public class RedisConfig extends CachingConfigurerSupport {
     }
 
     /**
-     * 缓存配置管理器
+     * Redis缓存配置管理器
      */
     @Bean
     public CacheManager cacheManager(LettuceConnectionFactory factory) {
-        // 配置序列化
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1));
-        RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+        // redis缓存配置
+        RedisCacheConfiguration redisCacheConfiguration =
+                RedisCacheConfiguration
+                        .defaultCacheConfig()
+                        // 缓存失效时间
+                        .entryTtl(Duration.ofMinutes(30))
+                        // 设置key的序列化方式
+                        .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                        // 设置value的序列化方式
+                        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+                        // 不缓存null值
+                        .disableCachingNullValues();
 
-        // 以锁写入的方式创建RedisCacheWriter对象
-        //RedisCacheWriter writer = RedisCacheWriter.lockingRedisCacheWriter(factory);
-        // 创建默认缓存配置对象
-        /* 默认配置，设置缓存有效期 1小时*/
-        //RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1));
-        /* 配置test的超时时间为120s*/
-        RedisCacheManager cacheManager = RedisCacheManager.builder(RedisCacheWriter.lockingRedisCacheWriter(factory)).cacheDefaults(redisCacheConfiguration)
-                .withInitialCacheConfigurations(singletonMap("test", RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(120)).disableCachingNullValues()))
-                .transactionAware().build();
+        //缓存管理器
+        RedisCacheManager cacheManager =
+                RedisCacheManager
+                        // 以锁写入的方式创建RedisCacheWriter对象
+                        .builder(RedisCacheWriter.lockingRedisCacheWriter(factory))
+                        // 设置默认缓存配置对象
+                        .cacheDefaults(redisCacheConfiguration)
+                        .transactionAware()
+                        .build();
         return cacheManager;
     }
 

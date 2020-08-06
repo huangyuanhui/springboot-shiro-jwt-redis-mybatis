@@ -11,27 +11,30 @@ import cn.gathub.util.CommonUtils;
 import cn.gathub.util.Result;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
  * 用户表 服务实现类
+ *
+ * @author hyh
  */
 @Service
 @Slf4j
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
 
-    @Autowired
+    @Resource
     private SysUserMapper userMapper;
-    @Autowired
+    @Resource
     private SysPermissionMapper sysPermissionMapper;
-    @Autowired
+    @Resource
     private SysUserRoleMapper sysUserRoleMapper;
+
 
     @Override
     public SysUser getUserByName(String username) {
@@ -40,7 +43,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 
     /**
-     * 通过用户名获取用户角色集合
+     * 通过用户名获取用户角色集合 并缓存对应用户的角色
      *
      * @param username 用户名
      * @return 角色集合
@@ -55,7 +58,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     * 通过用户名获取用户权限集合
+     * 通过用户名获取用户权限集合 并缓存用户对应的角色
      *
      * @param username 用户名
      * @return 权限集合
@@ -66,9 +69,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Set<String> permissionSet = new HashSet<>();
         List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
         for (SysPermission po : permissionList) {
-//			if (oConvertUtils.isNotEmpty(po.getUrl())) {
-//				permissionSet.add(po.getUrl());
-//			}
+			/*if (oConvertUtils.isNotEmpty(po.getUrl())) {
+				permissionSet.add(po.getUrl());
+			}*/
             if (CommonUtils.isNotEmpty(po.getPerms())) {
                 permissionSet.add(po.getPerms());
             }

@@ -2,8 +2,9 @@ package cn.gathub.filter;
 
 import cn.gathub.constant.CommonConstant;
 import cn.gathub.entity.JwtToken;
+import cn.gathub.util.Result;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,9 +13,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
- * 鉴权登录拦截器
+ * 鉴权登录拦截器（只会拦截不匹配匿名过滤器的请求）
+ * @author hyh
  **/
 @Slf4j
 public class JwtFilter extends BasicHttpAuthenticationFilter {
@@ -30,15 +33,17 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         try {
+            //判断是否是认证过
             executeLogin(request, response);
             return true;
         } catch (Exception e) {
-            throw new AuthenticationException("Token失效请重新登录");
+            responseError(response, "Token失效请重新登录");
+            return false;
         }
     }
 
     /**
-     *
+     * 认证授权方法
      */
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
@@ -51,6 +56,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         // 如果没有抛出异常则代表登入成功，返回true
         return true;
     }
+
 
     /**
      * 对跨域提供支持
@@ -68,5 +74,19 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             return false;
         }
         return super.preHandle(request, response);
+    }
+
+
+    private void responseError(ServletResponse response,String msg){
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        httpResponse.setStatus(401);
+        httpResponse.setCharacterEncoding("UTF-8");
+        httpResponse.setContentType("application/json;charset=UTF-8");
+        try {
+            String rj = new ObjectMapper().writeValueAsString(Result.error(401, msg));
+            httpResponse.getWriter().append(rj);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

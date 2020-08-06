@@ -93,6 +93,15 @@ public class Result<T> implements Serializable {
         return r;
     }
 
+    public static Result<Object> error(int code, String msg, Object res) {
+        Result<Object> r = new Result<Object>();
+        r.setCode(code);
+        r.setMessage(msg);
+        r.setSuccess(false);
+        r.setResult(res);
+        return r;
+    }
+
     /**
      * 无权限访问返回结果
      */

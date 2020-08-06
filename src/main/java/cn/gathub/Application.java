@@ -1,5 +1,6 @@
 package cn.gathub;
 
+import cn.gathub.util.PasswordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,21 +10,27 @@ import org.springframework.core.env.Environment;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * 引导类
+ * @author hyh
+ */
 @Slf4j
 @SpringBootApplication
 public class Application {
 
     public static void main(String[] args) throws UnknownHostException {
-        System.setProperty("spring.devtools.restart.enabled", "true");
 
         ConfigurableApplicationContext application = SpringApplication.run(Application.class, args);
         Environment env = application.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
         String port = env.getProperty("server.port");
-        log.info("\n----------------------------------------------------------\n\t" +
-                "Application is running! Access URLs:\n\t" +
-                "Local: \t\thttp://localhost:" + port + "/\n\t" +
-                "External: \thttp://" + ip + ":" + port + "/\n\t" +
-                "----------------------------------------------------------");
+//        log.info("\n----------------------------------------------------------\n\t" +
+//                "Application is running! Access URLs:\n\t" +
+//                "Local: \t\thttp://localhost:" + port + "/\n\t" +
+//                "External: \thttp://" + ip + ":" + port + "/\n\t" +
+//                "----------------------------------------------------------");
+
+
+        //System.out.println("PasswordUtil.encrypt(\"admin\", \"admin\", \"RCGTeGiH\") = " + PasswordUtil.encrypt("test", "test", "5FMD48RM"));
     }
 }
